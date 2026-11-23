@@ -9,7 +9,7 @@ from pathlib import Path
 
 def safe_name(value):
     value = value.lower().replace("-", "_").replace(" ", "_")
-    if not re.fullmatch(r"[a-z0-9_]{1, forty}", value):
+    if not re.fullmatch(r"[a-z0-9_]{1,40}", value):
         raise ValueError("project name may contain lowercase letters, numbers and underscores")
     return value
 
