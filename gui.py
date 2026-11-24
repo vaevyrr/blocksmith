@@ -73,7 +73,7 @@ class App(tk.Tk):
         model=self.model.get().strip()
         if not model:
             messagebox.showerror("BlockSmith AI","Enter a model name first."); return
-        if not messagebox.askyesno("Set up local AI",f"BlockSmith will download the official Ollama installer if needed, then download model '{model}'.\\n\\nThe model can require several GB of disk space. Continue?"):
+        if not messagebox.askyesno("Set up local AI",f"BlockSmith will download the official Ollama installer if needed, then download model '{model}'.\n\nThe model can require several GB of disk space. Continue?"):
             return
         self.setup_btn.configure(state="disabled")
         self.setup_status.set("Starting local AI setup...")
@@ -125,7 +125,7 @@ class App(tk.Tk):
     def build_done(self,result,err):
         self._busy(False,"Build complete." if result else "Build failed.")
         if err: messagebox.showerror("Build failed",err); return
-        self.preview.insert("end",f"\\n\\nBuild output:\\n{result}"); messagebox.showinfo("BlockSmith AI",f"Pack generated at:\\n{result}")
+        self.preview.insert("end",f"\n\nBuild output:\n{result}"); messagebox.showinfo("BlockSmith AI",f"Pack generated at:\n{result}")
 
     def export_plan(self):
         if not self.plan: messagebox.showinfo("BlockSmith AI","Generate a plan first."); return
