@@ -72,6 +72,24 @@ def _download_installer(progress: Callable[[str], None]) -> Path:
 def ensure_ollama_installed(progress: Callable[[str], None]) -> None:
     if ollama_ready():
         return
+    # If Ollama is already installed but its tray/server is closed, start it
+    # before downloading the installer again.
+    local_programs = Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Ollama"
+    app_exe = local_programs / "ollama app.exe"
+    cli_exe = local_programs / "ollama.exe"
+    for candidate, arguments in ((app_exe, []), (cli_exe, ["serve"])):
+        if candidate.exists():
+            try:
+                subprocess.Popen([str(candidate), *arguments],
+                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                progress("Starting your existing Ollama installation...")
+                for _ in range(15):
+                    if ollama_ready():
+                        return
+                    time.sleep(1)
+                break
+            except OSError:
+                continue
     installer = _download_installer(progress)
     progress("Starting the official Ollama installer. Complete its setup window to continue...")
     try:
