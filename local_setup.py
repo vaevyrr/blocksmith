@@ -58,10 +58,11 @@ def _download_installer(progress: Callable[[str], None]) -> Path:
         target.unlink(missing_ok=True)
         raise SetupError("The downloaded installer looks incomplete. Please retry or install from ollama.com.")
     # Only launch a properly signed Windows installer.
+    escaped_path = str(target).replace("'", "''")
     check = subprocess.run(
         ["powershell", "-NoProfile", "-Command",
-         "(Get-AuthenticodeSignature -LiteralPath $args[0]).Status"],
-        args=[str(target)], capture_output=True, text=True, timeout=20
+         f"(Get-AuthenticodeSignature -LiteralPath '{escaped_path}').Status"],
+        capture_output=True, text=True, timeout=20
     )
     if check.returncode != 0 or "Valid" not in check.stdout:
         target.unlink(missing_ok=True)
