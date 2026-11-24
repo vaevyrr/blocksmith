@@ -1,66 +1,44 @@
 # BlockSmith AI
 
-BlockSmith turns a natural-language Minecraft idea into a structured pack plan using a local Ollama model, then deterministically builds the pack from that plan.
+Describe a Minecraft idea, let a local Ollama model create a structured plan, review it, and build the files. Prompts and generation run locally; no cloud AI API key is used.
 
-No cloud AI API key is required. The desktop GUI talks to Ollama on your own machine at http://127.0.0.1:11434.
+## First launch (Windows)
 
-## Flow
+1. Launch BlockSmith AI.
+2. In **Local AI setup**, choose a model (default: \`llama3.2:3b\`).
+3. Click **Install / Set up local AI**.
+4. If Ollama is missing, BlockSmith downloads the official Windows installer from Ollama and verifies its Authenticode signature before launching it. Complete the visible installer.
+5. BlockSmith waits for Ollama, then downloads the selected model and displays pull progress.
+6. Generate a plan, review it, and build.
 
-Prompt -> local AI JSON plan -> review -> build -> generated pack
-
-Example request:
-
-Make a magic sword called Starfall with 500 durability, 18 damage, a star projectile ability, and a 10 second cooldown.
-
-The AI does not get direct filesystem access. It produces a structured plan and BlockSmith's Python compiler writes the files. That makes the project easier to inspect and keeps arbitrary model output away from the filesystem.
-
-## Platforms
-
-### Bedrock
-Generates behavior/resource pack scaffolding, custom item/block definitions, shaped recipes and function files.
-
-### Java
-Generates a datapack + resource-pack scaffold with functions and recipes.
-
-Fabric/NeoForge mod source generation is not enabled yet because those loaders need version-specific templates and mappings.
+The model download can be several GB and may take a while. Ollama itself and its model remain installed separately from BlockSmith. The app does not uninstall or silently replace existing software. Setup currently supports Windows; on other platforms install Ollama from https://ollama.com/download.
 
 ## Requirements
 
-- Python 3.10+
-- Ollama installed and running
-- A local model installed in Ollama
+- Windows 10 22H2 or newer for Ollama's native Windows app.
+- Internet access for initial installer/model downloads.
+- Enough free disk space for Ollama and the selected model.
+- Python 3.10+ only when running from source.
 
-Install Ollama from https://ollama.com/download
+Official installer: https://ollama.com/download/OllamaSetup.exe
 
-Example:
-
-    ollama pull llama3.2
-
-Start the local server if needed:
-
-    ollama serve
-
-Run BlockSmith:
+## Run from source
 
     python gui.py
 
-Then choose Bedrock or Java, choose your Ollama model, describe the pack, generate the plan, review it, and build it.
+## Platforms
+
+- **Bedrock:** behavior/resource pack scaffolding, items, blocks, shaped recipes, and function files.
+- **Java:** datapack/resource-pack scaffolding, functions, and recipes.
+- Fabric/NeoForge mod generation is not enabled yet.
 
 ## Windows EXE
 
-The existing GitHub Actions Windows GUI release workflow builds gui.py with PyInstaller, so the BlockSmith AI desktop app is the application being packaged.
+The Windows release workflow packages \`gui.py\` with PyInstaller. The EXE still downloads Ollama and the model on first setup; neither is bundled into the app. This keeps the app installer smaller and lets users choose their model.
 
-The EXE only needs Ollama running on the computer that uses it. The model itself stays local.
+## Notes
 
-## CLI
-
-The original deterministic scaffold generator is still available:
-
-    python blocksmith.py create copper_tools --output ./generated
-
-## Important
-
-Minecraft content schemas and Java pack formats vary by game version. BlockSmith intentionally generates conservative scaffolding rather than pretending every requested feature can be represented by one universal JSON schema. Review generated files against the Minecraft version you target.
+Minecraft schemas and Java pack formats vary by game version. Review generated files in Minecraft before distributing them. The local AI produces a structured plan; BlockSmith's compiler writes files and does not give the model arbitrary filesystem access.
 
 ## License
 
